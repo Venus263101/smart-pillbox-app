@@ -1,37 +1,57 @@
 import 'package:flutter/material.dart';
 
-class AddUserScreen extends StatelessWidget {
-  const AddUserScreen({super.key});
+class AddUserScreen extends StatefulWidget {
+  @override
+  _AddUserScreenState createState() => _AddUserScreenState();
+}
+
+class _AddUserScreenState extends State<AddUserScreen> {
+  final _formKey = GlobalKey<FormState>();
+  String name = "";
+  int age = 0;
+  bool isParalyzed = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add User')),
+      appBar: AppBar(title: Text("Add New User")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const TextField(
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            const TextField(
-              decoration: InputDecoration(labelText: 'Age'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                const Text('Needs caretaker access?'),
-                const Spacer(),
-                Switch(value: false, onChanged: (v) {}),
-              ],
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Save Profile'),
-            ),
-          ],
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: "Name"),
+                onSaved: (value) => name = value ?? "",
+                validator: (value) =>
+                value == null || value.isEmpty ? "Enter name" : null,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Age"),
+                keyboardType: TextInputType.number,
+                onSaved: (value) => age = int.tryParse(value ?? "0") ?? 0,
+                validator: (value) =>
+                value == null || value.isEmpty ? "Enter age" : null,
+              ),
+              SwitchListTile(
+                title: Text("Paralyzed / Cannot use pillbox"),
+                value: isParalyzed,
+                onChanged: (val) => setState(() => isParalyzed = val),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    // TODO: Add face registration here
+                    Navigator.pop(context); // Go back to user selection
+                  }
+                },
+                child: Text("Save User"),
+              )
+            ],
+          ),
         ),
       ),
     );
